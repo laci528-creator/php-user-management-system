@@ -1,0 +1,29 @@
+CREATE TABLE `tbl_users` (
+  `IDUser` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `Emailadresse` VARCHAR(255) NOT NULL UNIQUE,
+  `Passwort_hash` VARCHAR(255) NOT NULL,
+  `Vorname` VARCHAR(32) NOT NULL,
+  `Nachname` VARCHAR(32) NOT NULL,
+  `FIDGeschlecht` INT UNSIGNED DEFAULT NULL,
+  `GebDatum` DATE NOT NULL,
+  `RegZeitpunkt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT `fk_users_geschlecht`
+    FOREIGN KEY (`FIDGeschlecht`)
+    REFERENCES `tbl_geschlechter` (`IDGeschlecht`)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `tbl_geschlechter` (
+  `IDGeschlecht` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `Geschlecht` VARCHAR(16) NOT NULL UNIQUE,
+  `Kurzzeichen` VARCHAR(1) NOT NULL UNIQUE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci; 
+
+  
