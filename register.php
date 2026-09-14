@@ -1,4 +1,9 @@
+<?php
+require_once __DIR__ . "/includes/config.inc.php";
+require_once __DIR__ . "/includes/common.inc.php";
+require_once __DIR__ . "/includes/db.inc.php";
 
+?>
 
 <html>
 <head>
@@ -73,25 +78,35 @@
         $fehlerfelder[] = "Passwörter stimmen nicht überein";
     }
     if ($ok) {
-?>
-<h1>Formulardaten</h1>
-<?php
-  $Vorname = htmlspecialchars($Vorname);
-  $Nachname = htmlspecialchars($Nachname);
-  $Email = htmlspecialchars($Email);
-  $passwordHash = password_hash($Password, PASSWORD_DEFAULT);
-  $GebDatum = htmlspecialchars($GebDatum);
 
-  echo "<b>Vorname:</b> $Vorname<br />";
-  echo "<b>Nachname:</b> $Nachname<br />";
-  echo "<b>E-Mail:</b> $Email<br />";
-  echo "<b>Geburtsdatum:</b> $GebDatum<br />";
-  
+    $Vorname = trim($Vorname);
+    $Nachname = trim($Nachname);
+    $Email = trim($Email);
+    $passwordHash = password_hash($Password, PASSWORD_DEFAULT);
+    $FIDGeschlecht = (int)$FIDGeschlecht;
+
+    $conn = dbConnect();
+		
+	$sql = "INSERT INTO tbl_users 
+                (Emailadresse, Passwort_hash, Vorname, Nachname, FIDGeschlecht, GebDatum)
+            VALUES 
+                (?,?,?,?,?,?)
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssis", $Email, $passwordHash, $Vorname, $Nachname, $FIDGeschlecht, $GebDatum );
+
+    $stmt->execute();
+
+    echo "<p>Registrierung erfolgreich.</p>";
+
+
+
   
 ?>
 <?php
     } else {
-      echo "<p><b>Formular unvollst&auml;ndig</b></p>";
+      echo "<p><b>Fehler in input:</b></p>";
       echo "<ul><li>";
       echo implode("</li><li>", $fehlerfelder);
       echo "</li></ul>";
@@ -99,7 +114,7 @@
   } 
   if (!$ok) {
 ?>
-<h1>Registration seite</h1>
+<h1>Registrierung</h1>
 <form method="post" action="">
 
 <input type="radio" name="FIDGeschlecht" value="1" <?php if ($FIDGeschlecht === "1") echo "checked"; ?>/>Weiblich<br />
